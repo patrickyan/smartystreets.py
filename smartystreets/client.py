@@ -104,7 +104,7 @@ class Client(object):
         self.accept_keypair = accept_keypair
         self.truncate_addresses = truncate_addresses
 
-    def post(self, endpoint, data):
+    def post(self, endpoint, data, base_url=None):
         """
         Executes the HTTP POST request
 
@@ -123,7 +123,8 @@ class Client(object):
             headers['x-suppress-logging'] = 'true'
 
         params = {'auth-id': self.auth_id, 'auth-token': self.auth_token}
-        url = self.BASE_URL + endpoint
+        base_url = base_url or self.BASE_URL
+        url = base_url + endpoint
         response = requests.post(url, json.dumps(stringify(data)), params=params, headers=headers)
         if response.status_code == 200:
             return response.json()
@@ -172,3 +173,6 @@ class Client(object):
 
     def zipcode(self, *args):
         raise NotImplementedError("You cannot lookup zipcodes yet")
+
+    def extract(self, text):
+        return self.post('', data=text, base_url='extract-beta.api.smartystreets.com')
